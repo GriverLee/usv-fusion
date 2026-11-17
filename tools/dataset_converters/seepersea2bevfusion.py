@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-"""Convert a SeaPersea clip (e.g. barbados-20230223-240) to the
-MMDetection3D v2 info format consumed by ``projects/BEVFusion``.
+"""Convert a SeaPersea clip to the legacy ten-class nuScenes-style pkl.
+
+This is NOT the formal three-class training entry point. The formal dataset
+version ``seepersea_3class_v1`` is produced by ``build_seepersea_v1.py``.
 
 The converted layout mimics nuScenes so that ``NuScenesDataset`` and the
 official BEVFusion configs can read it without any change to the model::
@@ -29,11 +31,13 @@ from typing import Dict, List, Optional
 import mmengine
 import numpy as np
 
+# Legacy ten-class inference converter only. NOT the formal three-class
+# training entry point; use build_seepersea_v1.py for seepersea_3class_v1.
 # The three semantic classes of this dataset and their KITTI aliases.
 CATEGORY_TO_KITTI = {
     'ship': 'Car',
-    'buoy': 'Cyclist',
-    'other': 'Pedestrian',
+    'buoy': 'Pedestrian',
+    'other': 'Cyclist',
 }
 
 # BEVFusion is pretrained on nuScenes (10 classes). Keep the head untouched
@@ -158,7 +162,7 @@ def read_instances(path: str) -> List[dict]:
         dim = box['dimension']
         yaw = box['orientation'].get('rotationYaw', 0.0)
         label = KITTI_TO_NUSCENES_ID[CATEGORY_TO_KITTI[category]]
-        # v2 nuScenes convention: [x, y, z, w, l, h, yaw]
+        # [x, y, z, l, w, h, yaw]; ann.width is the along-heading length l.
         bbox_3d = [
             float(loc['x']), float(loc['y']), float(loc['z']),
             float(dim['width']), float(dim['length']), float(dim['height']),

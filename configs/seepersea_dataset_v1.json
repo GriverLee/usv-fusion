@@ -1,0 +1,47 @@
+{
+  "version": "seepersea_3class_v1",
+  "script_version": "1.0.0",
+  "clip": "barbados-20230223-240",
+  "expected_frame_count": 438,
+  "first_frame_id": 0,
+  "split_strategy": "single_clip_temporal_holdout",
+  "classes": ["ship", "buoy", "other"],
+  "categories": {"ship": 0, "buoy": 1, "other": 2},
+  "point_cloud_range": [-108.0, -108.0, -20.0, 108.0, 108.0, 20.0],
+  "voxel_size": [0.15, 0.15, 1.0],
+  "data_prefix": {
+    "pts": "samples/LIDAR_TOP",
+    "CAM_FRONT": "samples/CAM_FRONT"
+  },
+  "raw_layout": {
+    "pcd": "point_clouds/{frame:06d}.pcd",
+    "image": "undist_images/CAM_FRONT/{frame:06d}.png",
+    "calib": "calib/{frame:06d}.txt",
+    "annotation": "annotations/{frame:06d}.json",
+    "timestamp": "timestamp/timestamp.txt",
+    "empty_list": "empty_label_files.txt"
+  },
+  "pcd": {
+    "format": "ascii",
+    "fields": ["x", "y", "z", "intensity"],
+    "output_features": ["x", "y", "z", "raw_intensity", "time_lag"]
+  },
+  "image": {"width": 640, "height": 480, "cameras": ["CAM_FRONT"]},
+  "timestamp": {"sentinel_frame": 0, "sentinel_value": -99999999.0},
+  "splits": [
+    {"role": "train", "start": 0, "end": 279},
+    {"role": "temporal_gap", "start": 280, "end": 299},
+    {"role": "val", "start": 300, "end": 359},
+    {"role": "temporal_gap", "start": 360, "end": 379},
+    {"role": "test", "start": 380, "end": 437}
+  ],
+  "exclusion_priority": ["unlabeled", "temporal_gap"],
+  "smoke": {"source": "train", "count": 8},
+  "expected_audit": {
+    "unlabeled_frames": 66,
+    "labeled_all_frames": 372,
+    "labeled_all_boxes": 1804,
+    "labeled_all_by_class": {"ship": 968, "buoy": 464, "other": 372}
+  },
+  "range_rule": "lower_inclusive_upper_exclusive"
+}
